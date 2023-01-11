@@ -1,13 +1,13 @@
 ﻿namespace CodigoDoFuturoApi.Interfaces
 {
-    public interface IService
+    public interface IService<T>
     {
-        Task<List<Object>> TodosAsync();
-        Task AdicionarAsync(Object obj);
+        Task<List<T>> TodosAsync();
+        Task AdicionarAsync(T obj);
 
-        Task<Object> AtualizarAsync(Object obj);
+        Task<T> AtualizarAsync(T obj);
 
-        Task ApagarAsync(Object obj);
+        Task ApagarAsync(T obj);
 
     }
 }

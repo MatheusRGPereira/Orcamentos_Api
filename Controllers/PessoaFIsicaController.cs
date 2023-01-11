@@ -4,6 +4,7 @@ using CodigoDoFuturoApi.Models;
 using CodigoDoFuturoApi.Servicos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodigoDoFuturoApi.Controllers
 {
@@ -20,33 +21,33 @@ namespace CodigoDoFuturoApi.Controllers
         }
 
 
-        [HttpGet("")]
-        public IActionResult GetAll()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PessoaFisica>>> GetAll()
         {
-            var pesoasFisicas = _context.PessoasFisicas.ToList();
+            var pesoasFisicas = await _context.PessoasFisicas.ToListAsync();
             return StatusCode(200, pesoasFisicas);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute] int id)
+        public async Task<ActionResult<PessoaFisica>> GetById([FromRoute] int id)
         {
-            var pessoaFisica = _context.PessoasFisicas.AsQueryable().Where(p => p.Id == id);
+            var pessoaFisica = await _context.PessoasFisicas.FindAsync(id);
             return StatusCode(200, pessoaFisica);
         }
 
 
         [HttpPost("")]
-        public IActionResult Create([FromBody] PessoaFIsicaDto pessoaFisicaDto)
+        public async Task<ActionResult<PessoaFisica>> Create([FromBody] PessoaFIsicaDto pessoaFisicaDto)
         {
             var pessoaFisica = BuilderService<PessoaFisica>.Builder(pessoaFisicaDto);
             pessoaFisica.DataCriacao = DateTime.Now;
             _context.Add(pessoaFisica);
-            _context.SaveChanges();
+            await  _context.SaveChangesAsync();
             return StatusCode(201, pessoaFisica);
         }
 
-        [HttpPut]
-        public IActionResult Update(int id ,[FromBody] PessoaFisica pessoaFisica)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id ,[FromBody] PessoaFisica pessoaFisica)
         {
             if(id != pessoaFisica.Id)
             {
@@ -62,20 +63,20 @@ namespace CodigoDoFuturoApi.Controllers
                 });
             }
             _context.PessoasFisicas.Update(pessoaFisica);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return StatusCode(204);
         }
 
         [HttpDelete]
-        public IActionResult DeleteById(int id)
+        public async Task<IActionResult> DeleteById(int id)
         {
-            var pessoaFisica = _context.PessoasFisicas.Find(id);
+            var pessoaFisica = await _context.PessoasFisicas.FindAsync(id);
             if (pessoaFisica is null)
             {
                 return StatusCode(404);
             }
             _context.PessoasFisicas.Remove(pessoaFisica);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
             return StatusCode(204);
         }
 
